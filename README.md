@@ -26,7 +26,7 @@ dotnet run --project DotNetCoreDependencyInjection.csproj
 
 ## How to use in project
 
-### THIS MUST BE UPDATED
+### Step 1 - Implement Service
 Let's setup a simple WebEndpoint Service. We want this to start automatically when the app runs and stop automatically when the app stops... So we can implement the IAutoStart interface provided. 
 ```csharp 
 using Microsoft.Extensions.Logging;
@@ -56,7 +56,7 @@ namespace DependencyInjectionApp.Services
 }
 ```
 
-### Step 2
+### Step 2 - Register Service
 We must then let the dependency injection container know that the service is available. We do this by registering the class in the ServicesModule class. Registering with AddSinglton<interface, class>() will instantiate one instance that the container manages. 
 ```csharp
 using DependencyInjectionApp.Services;
@@ -70,6 +70,109 @@ namespace DependencyInjectionApp.DependencyInjection
         protected override void RegisterServiceModule(IServiceCollection serviceModule)
         {
             serviceModule.AddSingleton<IAutoStart, WebEndpointService>();
+        }
+    }
+}
+```
+
+### Step 3 - Implment Notifications
+Notifications will be broken into two steps. The Notification itself, which can be used anywhere in the application and then the actual notification handler.  You get to tell the handler how to handle the notification object and you get to tell the notification object what is contained inside of it. 
+ #### Creating a notification
+ Let's create a simple notification that contains a string. 
+ ```csharp
+using DependencyInjectionApp.Common;
+
+namespace DependencyInjectionApp.Notifications
+{
+    public class ApplicationStartedNotification : INotification
+    {
+        public string ApllicationStartedMessage {get; set;}
+    }
+}
+ ```
+#### Creating a notification handler
+Let's create a handler that receives the notification, grabs the string and logs it. We must use the BaseNotificationHanlder<T> interface to allow us to handle notifications on the back end later on. 
+```csharp
+using DependencyInjectionApp.Notifications;
+using Microsoft.Extensions.Logging;
+
+namespace DependencyInjectionApp.NotificationHandlers
+{
+    public class ApplicationStartedNotificationHandler : BaseNotificationHandler<ApplicationStartedNotification>
+    {
+        public readonly ILogger<ApplicationStartedNotificationHandler> _logger;
+        
+        public ApplicationStartedNotificationHandler(ILogger<ApplicationStartedNotificationHandler> logger)
+        {
+            _logger = logger;
+        }
+        protected override void HandleNotification(ApplicationStartedNotification notification)
+        {
+            _logger.LogInformation($"MESSAGE: {notification.ApllicationStartedMessage}");
+        }
+    }
+}
+```
+
+#### Registering the notification handler to the notification event
+In the application dependecy injection module we can register the notification handler to be explicitly associated with our newly created notification.
+```csharp
+using DependencyInjectionApp.Services;
+using Microsoft.Extensions.DependencyInjection;
+using DependencyInjectionApp.NotificationHandlers;
+using DependencyInjectionApp.Notifications;
+using DependencyInjectionApp.Common;
+
+namespace DependencyInjectionApp.DependencyInjection.Modules
+{
+    public class ApplicationModule : BaseModule 
+    {
+        protected override void RegisterServiceModule(IServiceCollection serviceModule)
+        {
+            // Register application handlers
+            serviceModule.AddTransient<IHandleNotifications<ApplicationStartedNotification>, ApplicationStartedNotificationHandler>();
+
+            // Register Notification Manager 
+            serviceModule.AddSingleton<INotificationManager, NotificationManager>();
+            
+            // Startup application
+            serviceModule.AddHostedService<AppStartupService>();
+        }
+```
+
+#### Using our new notification
+We can call our notification handler from any class that's already registered. In this case, let's use our Web Endpoint class.
+We will send a start and end notification to our handler. Earlier we decided that our handler will just print the notification string.
+```csharp
+using Microsoft.Extensions.Logging;
+using DependencyInjectionApp.Common;
+using DependencyInjectionApp.Notifications;
+
+namespace DependencyInjectionApp.Services 
+{
+    public class WebEndpointService : IAutoStart
+    {
+        public readonly ILogger<WebEndpointService> _logger;
+        public readonly INotificationManager _notificationManager;
+
+        public WebEndpointService(INotificationManager notificationManager, ILogger<WebEndpointService> logger)
+        { 
+            _logger = logger;
+            _notificationManager = notificationManager;
+        }
+        
+        public void Start() 
+        {
+            _notificationManager.Notify(new ApplicationStartedNotification{
+                ApllicationStartedMessage = "Endpoint Started Notification"
+            });
+        }
+
+        public void Stop()
+        {
+            _notificationManager.Notify(new ApplicationStartedNotification{
+                ApllicationStartedMessage = "Endpoint Stopped Notification"
+            });
         }
     }
 }
@@ -237,4 +340,66 @@ namespace DependencyInjectionApp
     }
 }
 
+```
+
+### Notifications
+#### Base notification handler 
+When creating a new notification handler we have to inherit the IHandleNotifications interface. This will allow us to later use the service provider to grab the services registered with an associated type. 
+```csharp
+using DependencyInjectionApp.Common;
+
+namespace DependencyInjectionApp.NotificationHandlers 
+{
+    public abstract class BaseNotificationHandler<T> : IHandleNotifications<T> where T : INotification
+    {
+        public void Handle(T notification)
+        {
+            try
+            {
+                HandleNotification(notification);
+            } 
+            catch
+            {
+                // Handle error
+            }
+        }
+
+        protected abstract void HandleNotification(T notification);
+    }
+}
+
+#### Notification manager
+```
+The notification manager's job is to use the service provider to find which handler you are trying to notify, and call that handlers handle() method. 
+```csharp
+using DependencyInjectionApp.Common;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace DependencyInjectionApp.DependencyInjection
+{
+    public class NotificationManager : INotificationManager
+    {
+        public readonly IServiceProvider _serviceProvider;
+
+        public NotificationManager(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        public void Notify<T>(T notification) where T : INotification
+        {
+            HanldeNotification(_serviceProvider, notification);
+        }
+
+        private static void HanldeNotification<T>(IServiceProvider serviceProvider, T notification) where T : INotification
+        {
+            var registeredNotificationHandlers = serviceProvider.GetServices<IHandleNotifications<T>>();
+            foreach (var handler in registeredNotificationHandlers)
+            {
+                handler.Handle(notification);
+            }
+        }
+    }
+}
 ```
