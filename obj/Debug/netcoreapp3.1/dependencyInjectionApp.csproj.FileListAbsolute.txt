@@ -1,4 +1,5 @@
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/appsettings.json
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.deps.json
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.runtimeconfig.json
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.runtimeconfig.dev.json
