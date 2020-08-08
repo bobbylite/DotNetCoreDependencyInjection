@@ -1,8 +1,7 @@
-# bobbylite toolkit for .NET Core [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=bobbylite%20.NET%20Core%20toolkit&url=https://github.com/bobbylite/.NETCoreLibrary&hashtags=Inversion-of-Control,Events,Autofac,bobbylite)
-bobbylite DotNetCoreDependencyInjection toolkit is a class library that utilizes Microsoft's built in inversion of control dependency injection.
+# bobbylite toolkit for .NET Core [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=bobbylite%20.NET%20Core%20toolkit&url=https://github.com/bobbylite/DotNetCoreDependencyInjection&hashtags=Inversion-of-Control,Events,bobbylite)
+bobbylite DotNetCoreDependencyInjection is a dependency injection application scaffold that utilizes Microsoft's built in inversion of control dependency injection to register services, events, and handlers.
 
 ## Run example
-There is a test script available to run to see how this repo works. 
 Run the following in your terminal.
 
 ### Clone the code 
@@ -11,6 +10,7 @@ git clone https://github.com/bobbylite/DotNetCoreDependencyInjection
 cd DotNetCoreDependencyInjection
 ```
 ### .NET Reference Guide
+To add as a library reference you can refer to this documentation.
 https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-add-reference
 
 
@@ -21,125 +21,55 @@ dotnet build
 
 ### How to run
 ```bash
-dotnet run --project DotNetCoreDependencyInjection/DotNetCoreDependencyInjection.csproj
+dotnet run --project DotNetCoreDependencyInjection.csproj
 ```
 
 ## How to use in project
 
 ### THIS MUST BE UPDATED
-Implement your Event so you can have everything you need.  Maybe you want to setup a service for handling an event later?  
+Let's setup a simple WebEndpoint Service. We want this to start automatically when the app runs and stop automatically when the app stops... So we can implement the IAutoStart interface provided. 
 ```csharp 
-using bobbylite.Notifications;
+using Microsoft.Extensions.Logging;
+using DependencyInjectionApp.Common;
 
-namespace bobbylite {
-    public class ApplicationStartedNotification : IAppNotification {
+namespace DependencyInjectionApp.Services 
+{
+    public class WebEndpointService : IAutoStart
+    {
+        public readonly ILogger<WebEndpointService> _logger;
 
+        public WebEndpointService(ILogger<WebEndpointService> logger)
+        { 
+            _logger = logger;
+        }
+        
+        public void Start() 
+        {
+            _logger.LogInformation("Web Endpoint Started!");
+        }
+
+        public void Stop()
+        {
+            _logger.LogInformation("Web Endpoint Stopped.");
+        }
     }
 }
 ```
 
 ### Step 2
-This is where we will implement our event handler.  We must make sure to inherit the ApplicationHandler<T> class provided. 
+We must then let the dependency injection container know that the service is available. We do this by registering the class in the ServicesModule class. Registering with AddSinglton<interface, class>() will instantiate one instance that the container manages. 
 ```csharp
-using System;
-using bobbylite.Handlers;
+using DependencyInjectionApp.Services;
+using DependencyInjectionApp.Common;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace bobbylite {
-    public class ApplicationStartedNotificationHandler : ApplicationHandler<ApplicationStartedNotification> {
-        protected override void HandleNotification(ApplicationStartedNotification message) {
-            Console.WriteLine("Application Started Successfully...");
-        }
-    }
-}
-```
-
-### Step 3
-```csharp
-using System;
-using bobbylite.Notifications;
-using Autofac;
-
-namespace bobbylite {
-    public class ApplicationStartupService : IAutoStart {
-
-        public NotificationManager NotificationManager {get; set;}
-
-        public void Start() => NotificationManager.Notify(new ApplicationStartedNotification());
-    }
-}
-```
-
-### Step 4
-Now we need to wire up/connect the ApplicationStartedEvent to the ApplicationStartedEventHandler and the ApplicationStartupService that inherits IAutoStart.
-```csharp
-using System.Reflection;
-using Autofac;
-using Module = Autofac.Module;
-using bobbylite.Notifications;
-
-namespace bobbylite {
-    public class ApplicationModule : Module {
-        protected override void Load(ContainerBuilder builder) {
-            StartUp(builder);
-            StartNotificationManager(builder);
-        }
-
-        private void StartUp(ContainerBuilder builder) {
-            builder.Register(c => new ApplicationStartupService())
-                .As<IAutoStart>()
-                .SingleInstance()
-                .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
-        }
-
-        private void StartNotificationManager(ContainerBuilder builder) {
-            builder.RegisterType<ApplicationStartedNotificationHandler>()
-                .As<IHandleNotifications<ApplicationStartedNotification>>()
-                .PropertiesAutowired()
-                .SingleInstance();
-        }
-    }
-}
-```
-
-### Step 5
-Lastly we will build the Autofac container. This is the entry point to the toolkit.
-Below is an example of my test code. 
-```csharp
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using bobbylite;
-using bobbylite.DependencyInjection;
-using Autofac;
-
-namespace bobbylite
+namespace DependencyInjectionApp.DependencyInjection
 {
-    public class UnitTest1
+    public class ServicesModule : BaseModule 
     {
-        private IContainer _container;
-
-        [Fact]
-        public void Test1()
+        protected override void RegisterServiceModule(IServiceCollection serviceModule)
         {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new bobbylite.DependencyInjection.Modules.CoreModule());
-            builder.RegisterModule(new ApplicationModule());
-            _container = builder.Build();
-
-            AutoStart();
-        }
-
-        private void AutoStart() {
-            var resolved = _container.Resolve<ObjectResolver>();
-            foreach(var instance in resolved.GetAll<IAutoStart>()) {
-                Task.Run(() => {
-                    try {
-                        instance.Start();
-                    } catch (Exception) {
-                        // Handle exception
-                    }
-                });
-            }
+            serviceModule.AddSingleton<IAutoStart, WebEndpointService>();
         }
     }
 }
@@ -151,56 +81,160 @@ This .NET Core lib uses Autofac's container and interfaces to auto-wire everythi
 you have NotificationManager because of this Core Module in the lib. 
 Take a look below.
 
-#### Core Module
+#### Base Module
 ```csharp
-using Autofac;
-using bobbylite.Notifications;
+using Microsoft.Extensions.DependencyInjection;
+using DependencyInjectionApp.Common;
 
-namespace bobbylite.DependencyInjection.Modules
+namespace DependencyInjectionApp.DependencyInjection
 {
-    public class CoreModule : Module
+    public abstract class BaseModule : IBaseModule 
     {
-        protected override void Load(ContainerBuilder builder)
+        public void BuildModule(IServiceCollection service)
         {
-            builder.Register(c => new ObjectResolver(c.Resolve<IComponentContext>())).AsSelf().SingleInstance();
-            builder.RegisterType<NotificationManager>().AsSelf().SingleInstance();
+            try 
+            {
+                RegisterServiceModule(service);
+            } catch
+            {
+                // Handle 
+            }
+        }
+
+        protected abstract void RegisterServiceModule(IServiceCollection serviceModule);
+    }
+}
+```
+
+#### Application Startup Service
+This is the service that identifies objects that are registered as auto start classes. 
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using DependencyInjectionApp.Common;
+using System;
+using System.Threading.Tasks;
+using System.Threading;
+
+namespace DependencyInjectionApp.Services
+{
+    public class AppStartupService : IHostedService
+    {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<AppStartupService> _logger;
+
+        public AppStartupService(IServiceProvider provider, ILogger<AppStartupService> logger)
+        {
+            _serviceProvider = provider;
+            _logger = logger;
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    _logger.LogInformation("Starting application...");
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception.StackTrace);
+                }
+            }, cancellationToken);
+
+            return AutoHandleTask(ServiceActions.Start);
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                _logger.LogInformation("Stopping application...");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception.StackTrace);
+            }
+
+            return AutoHandleTask(ServiceActions.Stop);
+        }
+
+        private Task AutoHandleTask(ServiceActions action)
+        {
+            var registeredAutoStartServices = _serviceProvider.GetServices<IAutoStart>();
+            foreach (var registeredService in registeredAutoStartServices)
+            {
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        if (action.Equals(ServiceActions.Start)) registeredService.Start();
+                        if (action.Equals(ServiceActions.Stop)) registeredService.Stop();
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogError(exception.StackTrace);
+                    }
+                });
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private enum ServiceActions
+        {
+            Start,
+            Stop
         }
     }
 }
 ```
 
-#### Object Resolver
+#### Application Startup Registration
+This is the entry point for our auto start objects.
 ```csharp
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autofac;
+using DependencyInjectionApp.Services;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace bobbylite.DependencyInjection
+namespace DependencyInjectionApp.DependencyInjection
 {
-    public class ObjectResolver
+    public class ApplicationModule : BaseModule 
     {
-        private readonly IComponentContext _componentContext;
-
-        public ObjectResolver(IComponentContext componentContext)
+        protected override void RegisterServiceModule(IServiceCollection serviceModule)
         {
-            _componentContext = componentContext;
+            serviceModule.AddHostedService<AppStartupService>();
         }
-
-        public T Get<T>()
-        {
-            return _componentContext.Resolve<T>();
-        }
-
-        public T Get<T>(params Tuple<string, object>[] constructorArgs)
-        {
-            return _componentContext.Resolve<T>(constructorArgs.Select(arg => new NamedParameter(arg.Item1, arg.Item2)));
-        }
-
-        public IEnumerable<T> GetAll<T>()
-        {
-            return _componentContext.Resolve<IEnumerable<T>>();
-        } 
     }
 }
+```
+
+### App
+This is the entry point for the application. 
+```csharp
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using DependencyInjectionApp.DependencyInjection;
+
+namespace DependencyInjectionApp
+{
+    public class App
+    {
+        public static void Main(string[] args) => HostBuilder(args).Build().Run();
+        public static IHostBuilder HostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging=>
+                {
+                    logging.AddConsole();
+                    logging.AddFile("./dependencyInjectionApp/logs/AppLog.log");
+                })
+                .ConfigureAppConfiguration((hostingContext, config)
+                    => config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false))
+                .ConfigureServices((services) => new ApplicationModule().BuildModule(services))
+                .ConfigureServices((services) => new ServicesModule().BuildModule(services));
+    }
+}
+
 ```
