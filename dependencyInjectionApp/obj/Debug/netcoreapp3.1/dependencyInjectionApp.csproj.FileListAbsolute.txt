@@ -1,14 +1,9 @@
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.deps.json
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.dll
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.pdb
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.csprojAssemblyReference.cache
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.AssemblyInfoInputs.cache
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.AssemblyInfo.cs
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.dll
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.pdb
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.deps.json
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.runtimeconfig.json
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.runtimeconfig.dev.json
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.dll
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/dependencyInjectionApp.pdb
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Microsoft.DotNet.PlatformAbstractions.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Configuration.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Configuration.Abstractions.dll
@@ -38,6 +33,7 @@
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Primitives.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Newtonsoft.Json.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.dll
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.Extensions.Hosting.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.Extensions.Logging.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.Extensions.Logging.File.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.Formatting.Compact.dll
@@ -47,5 +43,9 @@
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.Sinks.RollingFile.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/System.Diagnostics.EventLog.dll
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/runtimes/win/lib/netcoreapp2.0/System.Diagnostics.EventLog.dll
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.csprojAssemblyReference.cache
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.AssemblyInfoInputs.cache
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.AssemblyInfo.cs
 /Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.csproj.CopyComplete
-/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/bin/Debug/netcoreapp3.1/Serilog.Extensions.Hosting.dll
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.dll
+/Users/robertluisi/source/repos/DotNetCoreScaffolding/DotNetCoreDependencyInjection/dependencyInjectionApp/obj/Debug/netcoreapp3.1/dependencyInjectionApp.pdb
