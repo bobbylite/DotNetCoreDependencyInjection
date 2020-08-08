@@ -1,2 +1,4 @@
-logs/
 .vscode/
+logs/
+bin/
+obj/
