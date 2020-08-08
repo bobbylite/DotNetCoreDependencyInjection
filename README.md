@@ -1,5 +1,5 @@
-# bobbylite dependency injection application [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=bobbylite%20.NET%20Core%20toolkit&url=https://github.com/bobbylite/DotNetCoreDependencyInjection&hashtags=Inversion-of-Control,Events,bobbylite)
-bobbylite DotNetCoreDependencyInjection is a dependency injection application scaffold that utilizes Microsoft's built in inversion of control dependency injection to register services, events, and handlers.
+# bobbylite Decoupled Dependency Injection Application [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=bobbylite%20.NET%20Core%20toolkit&url=https://github.com/bobbylite/DotNetCoreDependencyInjection&hashtags=Inversion-of-Control,Events,bobbylite)
+bobbylite DotNetCoreDependencyInjection is a dependency injection application scaffold that utilizes Microsoft's built in inversion of control dependency injection to decouple registered services, events, and handlers.
 
 ## Run example
 Run the following in your terminal.
@@ -115,7 +115,7 @@ namespace DependencyInjectionApp.NotificationHandlers
 ```
 
 #### Registering the notification handler to the notification event
-In the application dependecy injection module we can register the notification handler to be explicitly associated with our newly created notification.
+In the application dependecy injection module we can register the notification handler to be explicitly associated with our newly created notification. Registering with AddTransient<interface, class>() will instantiate a new instance everytime it is resolved.
 ```csharp
 using DependencyInjectionApp.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -183,6 +183,69 @@ Behind the scenes we have two important files that really auto-wire up the notif
 This .NET Core lib uses Autofac's container and interfaces to auto-wire everything in the background. Out of the box
 you have NotificationManager because of this Core Module in the lib. 
 Take a look below.
+
+### Notifications
+Let's take a look at how notifications are decoupled on the back end. 
+
+#### Base notification handler 
+When creating a new notification handler we have to inherit the IHandleNotifications interface. This will allow us to later use the service provider to grab the services registered with an associated type. 
+```csharp
+using DependencyInjectionApp.Common;
+
+namespace DependencyInjectionApp.NotificationHandlers 
+{
+    public abstract class BaseNotificationHandler<T> : IHandleNotifications<T> where T : INotification
+    {
+        public void Handle(T notification)
+        {
+            try
+            {
+                HandleNotification(notification);
+            } 
+            catch
+            {
+                // Handle error
+            }
+        }
+
+        protected abstract void HandleNotification(T notification);
+    }
+}
+```
+#### Notification manager
+The notification manager's job is to use the service provider to find which handler you are trying to notify, and call that handlers handle() method. 
+```csharp
+using DependencyInjectionApp.Common;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace DependencyInjectionApp.DependencyInjection
+{
+    public class NotificationManager : INotificationManager
+    {
+        public readonly IServiceProvider _serviceProvider;
+
+        public NotificationManager(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        public void Notify<T>(T notification) where T : INotification
+        {
+            HanldeNotification(_serviceProvider, notification);
+        }
+
+        private static void HanldeNotification<T>(IServiceProvider serviceProvider, T notification) where T : INotification
+        {
+            var registeredNotificationHandlers = serviceProvider.GetServices<IHandleNotifications<T>>();
+            foreach (var handler in registeredNotificationHandlers)
+            {
+                handler.Handle(notification);
+            }
+        }
+    }
+}
+```
 
 #### Base Module
 ```csharp
@@ -340,66 +403,4 @@ namespace DependencyInjectionApp
     }
 }
 
-```
-
-### Notifications
-#### Base notification handler 
-When creating a new notification handler we have to inherit the IHandleNotifications interface. This will allow us to later use the service provider to grab the services registered with an associated type. 
-```csharp
-using DependencyInjectionApp.Common;
-
-namespace DependencyInjectionApp.NotificationHandlers 
-{
-    public abstract class BaseNotificationHandler<T> : IHandleNotifications<T> where T : INotification
-    {
-        public void Handle(T notification)
-        {
-            try
-            {
-                HandleNotification(notification);
-            } 
-            catch
-            {
-                // Handle error
-            }
-        }
-
-        protected abstract void HandleNotification(T notification);
-    }
-}
-
-#### Notification manager
-```
-The notification manager's job is to use the service provider to find which handler you are trying to notify, and call that handlers handle() method. 
-```csharp
-using DependencyInjectionApp.Common;
-using System;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace DependencyInjectionApp.DependencyInjection
-{
-    public class NotificationManager : INotificationManager
-    {
-        public readonly IServiceProvider _serviceProvider;
-
-        public NotificationManager(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public void Notify<T>(T notification) where T : INotification
-        {
-            HanldeNotification(_serviceProvider, notification);
-        }
-
-        private static void HanldeNotification<T>(IServiceProvider serviceProvider, T notification) where T : INotification
-        {
-            var registeredNotificationHandlers = serviceProvider.GetServices<IHandleNotifications<T>>();
-            foreach (var handler in registeredNotificationHandlers)
-            {
-                handler.Handle(notification);
-            }
-        }
-    }
-}
 ```
