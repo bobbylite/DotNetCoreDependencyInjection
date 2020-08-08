@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using DependencyInjectionApp.DependencyInjection;
+using DependencyInjectionApp.DependencyInjection.Modules;
 
 namespace DependencyInjectionApp
 {

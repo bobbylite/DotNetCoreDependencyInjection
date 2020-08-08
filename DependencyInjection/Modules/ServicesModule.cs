@@ -2,7 +2,7 @@ using DependencyInjectionApp.Services;
 using DependencyInjectionApp.Common;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DependencyInjectionApp.DependencyInjection
+namespace DependencyInjectionApp.DependencyInjection.Modules
 {
     public class ServicesModule : BaseModule 
     {
