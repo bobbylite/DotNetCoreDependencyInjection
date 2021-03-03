@@ -9,6 +9,7 @@ namespace DependencyInjectionApp.DependencyInjection.Modules
         protected override void RegisterServiceModule(IServiceCollection serviceModule)
         {
             serviceModule.AddSingleton<IAutoStart, WebEndpointService>();
+            serviceModule.AddSingleton<IAutoStart, TrainingService>();
         }
     }
 }
