@@ -180,8 +180,8 @@ namespace DependencyInjectionApp.Services
 
 ## Behind the scenes
 Behind the scenes we have two important files that really auto-wire up the notifications to the handlers.
-This .NET Core lib uses Autofac's container and interfaces to auto-wire everything in the background. Out of the box
-you have NotificationManager because of this Core Module in the lib. 
+This .NET Core lib uses Microsoft's DI container to auto-wire everything in the background. Out of the box
+you have NotificationManager because of this Core Module. 
 Take a look below.
 
 ### Notifications
