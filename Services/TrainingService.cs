@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using DependencyInjectionApp.Common;
 using DependencyInjectionApp.Model;
@@ -41,6 +42,8 @@ namespace DependencyInjectionApp.Services
 
         public void Start()
         {
+            PercentErr();
+            /*
             // Operation sequence
             var ShoppingItem = new ShoppingItem{
                 ItemId = 1,
@@ -75,11 +78,11 @@ namespace DependencyInjectionApp.Services
             }
             var serach = "Soap";
             logger.LogInformation($"Searched: {serach} Item: {FindItem(serach)}");
+            */
         }
 
         public void Stop()
         {
-            
         }
 
         private string FindItem(string item) 
@@ -94,6 +97,43 @@ namespace DependencyInjectionApp.Services
         private List<ShoppingItem> BinarySearch(string item)
         {
             throw new NotImplementedException();
+        }
+
+        private void PercentErr()
+        {
+            List<double> listOfIterationPctErrAvg = new List<double>();
+            var testIter = 10000;
+            var iter = 20;
+            for(int i=0;i<iter;i++)
+            {
+                var iterations = testIter*10000;
+                var averageIterations = TrainingService.LexMathProof(logger, iterations);
+                var percentErr = Math.Abs((averageIterations - Math.E)/Math.E)*100;
+                listOfIterationPctErrAvg.Add(percentErr);
+                logger.LogInformation($"Iterations: {iterations}\nAvg Iters: {averageIterations}\nE: {Math.E}\nPercent Err: {percentErr}");
+            }
+
+            logger.LogInformation($"Average Perect Err for {iter} attempts: {listOfIterationPctErrAvg.Average()}");
+        }
+
+        private static double LexMathProof(ILogger<TrainingService> mathLogger, int iter)
+        {
+            int numOfIterations = iter;
+            Random randomNumGen = new Random();
+            List<int> listOfNumericalAttempts = new List<int>();
+
+            for (int i=1; i<numOfIterations; i++)
+            {
+                var numericalAttemptsToOneOrGreater = 0;
+                var sum = 0.0;
+                while(sum < 1)
+                {
+                    numericalAttemptsToOneOrGreater += 1;
+                    sum += randomNumGen.NextDouble();
+                }
+                listOfNumericalAttempts.Add(numericalAttemptsToOneOrGreater);
+            }
+            return listOfNumericalAttempts.Average();
         }
     }
 }
