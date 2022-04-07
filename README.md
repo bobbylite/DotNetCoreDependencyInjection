@@ -1,4 +1,4 @@
-# bobbylite Decoupled Dependency Injection Application [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=bobbylite%20.NET%20Core%20toolkit&url=https://github.com/bobbylite/DotNetCoreDependencyInjection&hashtags=Inversion-of-Control,Events,bobbylite)
+# Decoupled Dependency Injection Application [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=bobbylite%20.NET%20Core%20toolkit&url=https://github.com/bobbylite/DotNetCoreDependencyInjection&hashtags=Inversion-of-Control,Events,bobbylite)
 bobbylite DotNetCoreDependencyInjection is a dependency injection application scaffold that utilizes Microsoft's built in inversion of control dependency injection to decouple registered services, events, and handlers.
 
 ## Run example
